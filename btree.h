@@ -18,11 +18,17 @@ public:
     void traverse(){
         if (root != NULL) root->traverse();
     }
-    BTreeNode* find(int k){// function to find a key in this tree
-        return (root == NULL)? NULL : root->find(k);
+    bool find(string k, string *value){// function to find a key in this tree
+        if(root== NULL) {
+            //cout<<"NULL found"<<endl;
+            return false;
+        }
+        else{
+            return root->find(k,value);
+        }
     }
     // The main function that inserts a new key in this B-Tree
-    void insert(int k){
+    void insert(string k){
     // If tree is empty
         if (root == NULL){
         root = new BTreeNode(t, true);// Allocate memory for root
@@ -43,7 +49,8 @@ public:
             else  // If root is not full, call insertNonFull for root
                 root->insertNonFull(k);
     }
-    void delete_key(int k){ // The main function that removes a new key in the B-Tree
+
+    void delete_key(string k){ // The main function that removes a new key in the B-Tree
         if (!root){
             cout << "The tree is empty\n";
             return;

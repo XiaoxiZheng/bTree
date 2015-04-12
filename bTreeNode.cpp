@@ -7,15 +7,15 @@ BTreeNode::BTreeNode(int t1, bool leaf1){// Copy the given minimum degree and le
     t = t1;
     leaf = leaf1;
     // Allocate memory for maximum number of possible keys and child pointers
-    keys = new int[2*t-1];
+    keys = new string[2*t-1];
+    values = new string[2*t-1];
     ChildP = new BTreeNode *[2*t];
     // Initialize the number of keys as 0
     n = 0;
 }
-
 // A utility function that returns the index of the first key that is
 // greater than or equal to k
-int BTreeNode::findKey(int k)
+int BTreeNode::findKey(string k)
 {
     int idx=0;
     while (idx<n && keys[idx] < k)
@@ -24,14 +24,13 @@ int BTreeNode::findKey(int k)
 }
 
 // A function to delete_key the key k from the sub-tree rooted with this node
-void BTreeNode::delete_key(int k)
+void BTreeNode::delete_key(string k)
 {
     int idx = findKey(k);
 
     // The key to be removed is present in this node
     if (idx < n && keys[idx] == k)
     {
-
         // If the node is a leaf node - removeFromLeaf is called
         // Otherwise, delete_keyFromNonLeaf function is called
         if (leaf)
@@ -39,29 +38,20 @@ void BTreeNode::delete_key(int k)
         else
             removeFromNonLeaf(idx);
     }
-    else
-    {
-
+    else{
         // If this node is a leaf node, then the key is not present in tree
-        if (leaf)
-        {
+        if (leaf){
             cout << "The key "<< k <<" is does not exist in the tree\n";
             return;
         }
-
-        // The key to be removed is present in the sub-tree rooted with this node
-        // The flag indicates whether the key is present in the sub-tree rooted
-        // with the last child of this node
+        // The key to be removed is present in the sub-tree rooted with this node .
+        // The flag indicates whether the key is present in the sub-tree rooted with the last child of this node
         bool flag = ( (idx==n)? true : false );
-
-        // If the child where the key is supposed to exist has less that t keys,
-        // we fill that child
+        // If the child where the key is supposed to exist has less that t keys, fill that child
         if (ChildP[idx]->n < t)
             fill(idx);
-
-        // If the last child has been merged, it must have merged with the previous
-        // child and so we recurse on the (idx-1)th child. Else, we recurse on the
-        // (idx)th child which now has atleast t keys
+        // If the last child has been merged, it must have merged with the previous child and so we recurse on the (idx-1)th child. Else, we recurse on the
+        // (idx)th child which now has at least t keys
         if (flag && idx > n)
             ChildP[idx-1]->delete_key(k);
         else
@@ -69,38 +59,27 @@ void BTreeNode::delete_key(int k)
     }
     return;
 }
-
 // A function to remove the idx-th key from this node - which is a leaf node
-void BTreeNode::removeFromLeaf (int idx)
-{
-
+void BTreeNode::removeFromLeaf (int idx){
     // Move all the keys after the idx-th pos one place backward
     for (int i=idx+1; i<n; ++i)
         keys[i-1] = keys[i];
-
     // Reduce the count of keys
     n--;
-
     return;
 }
-
 // A function to remove the idx-th key from this node - which is a non-leaf node
-void BTreeNode::removeFromNonLeaf(int idx)
-{
-
-    int k = keys[idx];
-
+void BTreeNode::removeFromNonLeaf(int idx){
+    string k = keys[idx];
     // If the child that precedes k (ChildP[idx]) has atleast t keys,
     // find the predecessor 'pred' of k in the subtree rooted at
     // ChildP[idx]. Replace k by pred. Recursively delete pred
     // in ChildP[idx]
-    if (ChildP[idx]->n >= t)
-    {
-        int pred = getPred(idx);
+    if (ChildP[idx]->n >= t){
+        string pred = getPred(idx);
         keys[idx] = pred;
         ChildP[idx]->delete_key(pred);
     }
-
     // If the child ChildP[idx] has less that t keys, examine ChildP[idx+1].
     // If ChildP[idx+1] has atleast t keys, find the successor 'succ' of k in
     // the subtree rooted at ChildP[idx+1]
@@ -108,7 +87,7 @@ void BTreeNode::removeFromNonLeaf(int idx)
     // Recursively delete succ in ChildP[idx+1]
     else if  (ChildP[idx+1]->n >= t)
     {
-        int succ = getSucc(idx);
+        string succ = getSucc(idx);
         keys[idx] = succ;
         ChildP[idx+1]->delete_key(succ);
     }
@@ -126,7 +105,7 @@ void BTreeNode::removeFromNonLeaf(int idx)
 }
 
 // A function to get predecessor of keys[idx]
-int BTreeNode::getPred(int idx)
+string BTreeNode::getPred(int idx)
 {
     // Keep moving to the right most node until we reach a leaf
     BTreeNode *cur=ChildP[idx];
@@ -137,7 +116,7 @@ int BTreeNode::getPred(int idx)
     return cur->keys[cur->n-1];
 }
 
-int BTreeNode::getSucc(int idx)
+string BTreeNode::getSucc(int idx)
 {
 
     // Keep moving the left most node starting from ChildP[idx+1] until we reach a leaf
@@ -150,19 +129,13 @@ int BTreeNode::getSucc(int idx)
 }
 
 // A function to fill child ChildP[idx] which has less than t-1 keys
-void BTreeNode::fill(int idx)
-{
-
-    // If the previous child(ChildP[idx-1]) has more than t-1 keys, borrow a key
-    // from that child
+void BTreeNode::fill(int idx){
+    // If the previous child(ChildP[idx-1]) has more than t-1 keys, borrow a key from that child
     if (idx!=0 && ChildP[idx-1]->n>=t)
         borrowFromPrev(idx);
-
-    // If the next child(ChildP[idx+1]) has more than t-1 keys, borrow a key
-    // from that child
+    // If the next child(ChildP[idx+1]) has more than t-1 keys, borrow a key from that child
     else if (idx!=n && ChildP[idx+1]->n>=t)
         borrowFromNext(idx);
-
     // Merge ChildP[idx] with its sibling
     // If ChildP[idx] is the last child, merge it with with its previous sibling
     // Otherwise merge it with its next sibling
@@ -180,7 +153,6 @@ void BTreeNode::fill(int idx)
 void BTreeNode::borrowFromPrev(int idx){
     BTreeNode *child=ChildP[idx];
     BTreeNode *sibling=ChildP[idx-1];
-
     // The last key from ChildP[idx-1] goes up to the parent and key[idx-1]
     // from parent is inserted as the first key in ChildP[idx]. Thus, the  loses
     // sibling one key and child gains one key
@@ -190,19 +162,15 @@ void BTreeNode::borrowFromPrev(int idx){
         child->keys[i+1] = child->keys[i];
 
     // If ChildP[idx] is not a leaf, move all its child pointers one step ahead
-    if (!child->leaf)
-    {
+    if (!child->leaf){
         for(int i=child->n; i>=0; --i)
             child->ChildP[i+1] = child->ChildP[i];
     }
-
     // Setting child's first key equal to keys[idx-1] from the current node
     child->keys[0] = keys[idx-1];
-
     // Moving sibling's last child as ChildP[idx]'s first child
     if (!leaf)
         child->ChildP[0] = sibling->ChildP[sibling->n];
-
     // Moving the key from the sibling to the parent
     // This reduces the number of keys in the sibling
     keys[idx-1] = sibling->keys[sibling->n-1];
@@ -215,12 +183,9 @@ void BTreeNode::borrowFromPrev(int idx){
 
 // A function to borrow a key from the ChildP[idx+1] and place
 // it in ChildP[idx]
-void BTreeNode::borrowFromNext(int idx)
-{
-
+void BTreeNode::borrowFromNext(int idx){
     BTreeNode *child=ChildP[idx];
     BTreeNode *sibling=ChildP[idx+1];
-
     // keys[idx] is inserted as the last key in ChildP[idx]
     child->keys[(child->n)] = keys[idx];
 
@@ -242,7 +207,6 @@ void BTreeNode::borrowFromNext(int idx)
         for(int i=1; i<=sibling->n; ++i)
             sibling->ChildP[i-1] = sibling->ChildP[i];
     }
-
     // Increasing and decreasing the key count of ChildP[idx] and ChildP[idx+1]
     // respectively
     child->n += 1;
@@ -253,13 +217,11 @@ void BTreeNode::borrowFromNext(int idx)
 
 // A function to merge ChildP[idx] with ChildP[idx+1]
 // ChildP[idx+1] is freed after merging
-void BTreeNode::merge(int idx)
-{
+void BTreeNode::merge(int idx){
     BTreeNode *child = ChildP[idx];
     BTreeNode *sibling = ChildP[idx+1];
 
-    // Pulling a key from the current node and inserting it into (t-1)th
-    // position of ChildP[idx]
+    // Pulling a key from the current node and inserting it into (t-1)th position of ChildP[idx]
     child->keys[t-1] = keys[idx];
 
     // Copying the keys from ChildP[idx+1] to ChildP[idx] at the end
@@ -291,10 +253,12 @@ void BTreeNode::merge(int idx)
     delete(sibling);
     return;
 }
+
+
 // A utility function to insert a new key in this node
 // The assumption is, the node must be non-full when this
 // function is called
-void BTreeNode::insertNonFull(int k){
+void BTreeNode::insertNonFull(string k){
     // Initialize index as index of rightmost element
     int i = n-1;
 
@@ -389,7 +353,7 @@ void BTreeNode::traverse()
         // traverse the subtree rooted with child ChildP[i].
         if (leaf == false)
             ChildP[i]->traverse();
-        cout << " " << keys[i];
+        cout << " " << keys[i]<<endl;
     }
 
     // Print the subtree rooted with last child
@@ -398,23 +362,22 @@ void BTreeNode::traverse()
 }
 
 // Function to find key k in subtree rooted with this node
-BTreeNode *BTreeNode::find(int k)
-{
+bool BTreeNode::find(string k, string *value){
     // Find the first key greater than or equal to k
     int i = 0;
-    while (i < n && k > keys[i])
-        i++;
-
-    // If the found key is equal to k, return this node
-    if (keys[i] == k)
-        cout<<i<<endl;
-        return this;
-
-    // If key is not found here and this is a leaf node
-    if (leaf == true)
-        cout<<"NULL"<<endl;
-        return NULL;
-
+    while (i < n && k > keys[i]){
+            i++;
+    }
+        // If the found key is equal to k, return this node
+    if (keys[i] == k){
+        //cout<<i<<endl;
+        *value = values[i];
+        return true;
+    }
+        // If key is not found here and this is a leaf node
+    if (leaf == true){
+        return false;
+    }
     // Go to the appropriate child
-    return ChildP[i]->find(k);
+    return ChildP[i]->find(k,value);
 }
