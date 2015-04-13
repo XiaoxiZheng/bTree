@@ -1,0 +1,30 @@
+5
+0
+alpha x
+0
+beta b
+0
+cerma c
+0
+dolphine d
+0 
+epsolon e
+0
+apple aa
+3
+2
+e
+2
+cerma 
+2
+find
+2
+dolphine
+2
+g
+2
+Qiao
+2
+e
+3
+4

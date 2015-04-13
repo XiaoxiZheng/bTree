@@ -1,0 +1,13 @@
+5
+0
+apple a
+0
+beta b
+0
+car c
+0
+epsilon e
+0
+az azla
+3
+4

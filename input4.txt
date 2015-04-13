@@ -1,0 +1,16 @@
+3
+0
+apple a
+0
+beta b
+0
+car c
+0
+aa ab
+0
+ee ec
+3
+1
+ee
+3
+4
